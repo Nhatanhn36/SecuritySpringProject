@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>CodeLean | Employee Directory</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+  <h3>Employee Directory</h3>
+  <hr>
+
+  <div>
+    User: <span sec:authentication="name"></span>
+    <br>
+    Role(s): <span sec:authentication="principal.authorities"></span>
+    <br><br>
+  </div>
+  <form th:action="@{/employees/search}" class="form-inline">
+    <a th:href="@{employees/showFormForAdd}" class="btn btn-primary btn-sm mr-5 mb-3">
+      Add Employee
+    </a>
+    <input class="form-control ml-5 mr-ms-2 mb-3" type="search" name="employeeName" placeholder="Search">
+    <button class="btn btn-success mb-3" type="submit">Search</button>
+  </form>
+
+  <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="tempEmployee : ${employees}">
+      <td th:text="${tempEmployee.firstName}"/>
+      <td th:text="${tempEmployee.lastName}"/>
+      <td th:text="${tempEmployee.email}"/>
+      <td>
+        <div sec:authorize="hasAnyRole('ROLE_MANAGER','ROLE_ADMIN')">
+          <a th:href="@{employees/showFormForUpdate(employeeId=${tempEmployee.id})}" class="btn btn-info btn-sm">
+            Update
+          </a>
+        </div>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+          <a th:href="@{employees/delete(employeeId=${tempEmployee.id})}" class="btn btn-danger btn-sm" onclick="if (! (confirm('Are you sure you want to delete this Employee ?'))) return false">
+            Delete
+          </a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <form action="#" th:action="@{/logout}" method="POST">
+    <input type="submit" value="Logout" class="btn btn-outline-primary mt-2">
+  </form>
+</div>
+</body>
+</html>
